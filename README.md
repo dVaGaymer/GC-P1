@@ -36,3 +36,6 @@ Programing Basic Shaders, and additionally, working with Geometry.
 
   - [ ] Opción 1: Define sus vértices manualmente.
   - [ ] Opción 2: Carga un fichero de un formato conocido. Puedes utilizar librerías auxiliares como ASSIMP (http://www.assimp.org/).
+
+#TODO
+- [ ] Create Entity-derived class (null object) to parent obejct to and deal with rotations and translations diferently
