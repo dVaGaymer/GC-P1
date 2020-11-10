@@ -11,11 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="scr\Object.h" />
     <ClInclude Include="scr\Camera.h" />
     <ClInclude Include="scr\Entity.h" />
     <ClInclude Include="scr\BOX.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="scr\Object.cpp" />
     <ClCompile Include="scr\Camera.cpp" />
     <ClCompile Include="scr\Entity.cpp" />
     <ClCompile Include="scr\main.cpp">

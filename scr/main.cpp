@@ -5,13 +5,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+
+#include "Object.h"
 #include "Entity.h"
 #include "Camera.h"
 
-
 //Idenficadores de los objetos de la escena
-Entity* hijo;
-Entity* padre;
+Object* hijo;
+Object* padre;
 Camera* camera;
 
 //Declaración de CB
@@ -23,33 +24,36 @@ void mouseMotionFunc(int x, int y);
 
 int main(int argc, char** argv)
 {
-	char l[10];
-
-	//std::cin.get(l, 10);
-	std::cin >> std::ws >> l;
-
-	std::cout << l;
 	std::locale::global(std::locale("spanish"));// acentos ;)
 	if (!IGlib::init("../shaders_P1/shader.v10.vert", "../shaders_P1/shader.v10.frag"))
 		return -1;
    
 	//Se ajusta la cámara
-	//Si no se da valor se cojen valores por defecto
 	camera = &Camera();
-	camera->SetPosition(glm::vec3(0.0f, 0.0f, 10.0f));
-	IGlib::setViewMat(camera->GetViewMat());
+	camera->SetPosition(glm::vec3(0.0f, 0.0f, 20.0f));
+	IGlib::setViewMat(camera->GetMatView());
+	
+	//Se crean objetos
+	hijo = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
+		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
+	padre = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
+		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
 
-	hijo = &Entity(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
-		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
-	padre = &Entity(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
-		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
 	hijo->SetParent(padre);
 
-	hijo->SetPosition(glm::vec3(-5.0f, 0.0f, 0.0f));
-	padre->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	//Test Position
+	hijo->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	padre->SetPosition(glm::vec3(3.0f, 0.0f, 0.0f));
+	//Test Rotation
+	padre->Rotate(glm::vec3(0.0f, 0.0f, 0.0f));
+	hijo->Rotate(glm::vec3(45.0f, 0.0f, 0.0f));
 
-	IGlib::setModelMat(hijo->getObjId(), hijo->GetModelMat());
-	IGlib::setModelMat(padre->getObjId(), padre->GetModelMat());
+	//Test Scale
+	hijo->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+	padre->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+
+	IGlib::setModelMat(hijo->GetObjId(), hijo->GetMatModel());
+	IGlib::setModelMat(padre->GetObjId(), padre->GetMatModel());
 
 	//CBs
 	IGlib::setResizeCB(resizeFunc);
@@ -67,60 +71,18 @@ int main(int argc, char** argv)
 void resizeFunc(int width, int height)
 {
 	camera->SetAspect((float)width / (float)height);
-	IGlib::setProjMat(camera->GetProjMat());
+	IGlib::setProjMat(camera->GetMatProj());
 }
 
 void idleFunc()
 {
-	float speed0 = 1.0f;
-	float speed1 = 1.0f;
-
-	hijo->AddRotation(glm::vec3(speed0, speed0, 0.0f));
-	IGlib::setModelMat(hijo->getObjId(), hijo->GetModelMat());
-
-	padre->AddRotation(glm::vec3(speed0, speed0, 0.0f));
-	IGlib::setModelMat(padre->getObjId(), padre->GetModelMat());
-	IGlib::setModelMat(hijo->getObjId(), hijo->GetModelMat());
+	hijo->Rotate(glm::vec3(1.0f, 0.0f, 0.0f));
+	IGlib::setModelMat(hijo->GetObjId(), hijo->GetMatModel());
 }
 
 void keyboardFunc(unsigned char key, int x, int y)
 {
 	std::cout << "Se ha pulsado la tecla " << key << std::endl << std::endl;
-	if (key == 'x')
-		camera->SetApreture(camera->GetAperture() + 1);
-		
-	else if (key == 'z')
-		camera->SetApreture(camera->GetAperture() - 1);
-	IGlib::setProjMat(camera->GetProjMat());
-
-	if (key == 'w')
-		camera->MoveForward(-0.2f);
-	if (key == 's')
-		camera->MoveForward(0.2f);
-	if (key == 'a')
-		camera->MoveSide(-0.2f);
-	if (key == 'd')
-		camera->MoveSide(0.2f);
-	if (key == ' ')
-		camera->MoveUpDown(0.2f);
-	if (key == 'c')
-		camera->MoveUpDown(-0.2f);
-
-	if (key == 'i')
-		camera->RotateRight(5.0f);
-	if (key == 'k')
-		camera->RotateRight(-5.0f);
-
-	if (key == 'l')
-		camera->RotateUp(-5.0f);
-	if (key == 'j')
-		camera->RotateUp(5.0f);
-
-	if (key == 'o')
-		camera->RotateForward(5.0f);
-	if (key == 'u')
-		camera->RotateForward(-5.0f);
-	IGlib::setViewMat(camera->GetViewMat());
 }
 
 void mouseFunc(int button, int state, int x, int y)
