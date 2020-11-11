@@ -4,6 +4,8 @@ First Computer Graphics GLSL exercise.
 
 Programing Basic Shaders, and additionally, working with Geometry.
 
+Shaders not included in the repo (not yet :P)
+
 # Basics
 - [x] Define una matriz de proyección que conserve el aspect ratio cuando cambiamos el tamaño de la ventana.
 
