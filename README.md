@@ -5,21 +5,21 @@ First Computer Graphics GLSL exercise.
 Programing Basic Shaders, and additionally, working with Geometry.
 
 # Basics
-- [ ] Define una matriz de proyección que conserve el aspect ratio cuando cambiamos el tamaño de la ventana.
+- [x] Define una matriz de proyección que conserve el aspect ratio cuando cambiamos el tamaño de la ventana.
 
-- [ ] Añade un nuevo cubo a la escena. El segundo cubo deberá orbitar alrededor del primero describiendo una circunferencia a la vez que rota sobre su eje Y.
+- [x] Añade un nuevo cubo a la escena. El segundo cubo deberá orbitar alrededor del primero describiendo una circunferencia a la vez que rota sobre su eje Y.
 
-- [ ] Control de la cámara con el teclado (First Person Shooter). Controles mínimos que deberán incluirse: movimiento hacia adelante, retroceso, movimientos laterales (izquierda y derecha) y giros (izquierda y derecha).
+- [x] Control de la cámara con el teclado (First Person Shooter). Controles mínimos que deberán incluirse: movimiento hacia adelante, retroceso, movimientos laterales (izquierda y derecha) y giros (izquierda y derecha).
 
-- [ ] Crear un shader de vértices y otro de fragmentos de forma que:
+- [x] Crear un shader de vértices y otro de fragmentos de forma que:
 
   - Cuando el índice de la primitiva (gl_PrimitiveID) sea impar, el color del fragmento este determinado por su normal en coordenadas de la cámara.
   - Cuando el índice de la primitiva (gl_PrimitiveID) sea par, se pinten las coordenadas de textura.
  
-- [ ] Crear un shader de vértices y otro de fragmentos de forma que se descarten algunos de los fragmentos de las caras del cubo. Nota: debes utilizar la sentencia discard.
+- [x] Crear un shader de vértices y otro de fragmentos de forma que se descarten algunos de los fragmentos de las caras del cubo. Nota: debes utilizar la sentencia discard.
 
-  - [ ] Opción 1: Crea una textura en blanco y negro. Asigna dicha textura al cubo que se ha usado en las prácticas. Descarta los fragmentos que tengan asociado el color negro.
-  - [ ] Opción 2: Descarta los fragmentos que no cumplan esta condición:
+  - [x] Opción 1: Crea una textura en blanco y negro. Asigna dicha textura al cubo que se ha usado en las prácticas. Descarta los fragmentos que tengan asociado el color negro.
+  - [x] Opción 2: Descarta los fragmentos que no cumplan esta condición:
   ```
   (𝒓 − 𝟎. 𝟓)^𝟐 + (𝒔 − 𝟎. 𝟓)^2 < 𝟎.𝟐
   ```

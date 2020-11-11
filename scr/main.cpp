@@ -5,15 +5,18 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <iomanip>
 
 #include "Object.h"
 #include "Entity.h"
 #include "Camera.h"
 
 //Idenficadores de los objetos de la escena
-Object* hijo;
-Object* padre;
-Camera* camera;
+Object *sun;
+Object *earth, *middleLayer, *innerLayer;
+Object *moon;
+Object *cubo0, *cubo1;
+Camera *camera;
 
 //Declaración de CB
 void resizeFunc(int width, int height);
@@ -25,35 +28,74 @@ void mouseMotionFunc(int x, int y);
 int main(int argc, char** argv)
 {
 	std::locale::global(std::locale("spanish"));// acentos ;)
-	if (!IGlib::init("../shaders_P1/shader.v10.vert", "../shaders_P1/shader.v10.frag"))
+	if (!IGlib::init("../shaders_P1/shader.v11b.vert", "../shaders_P1/shader.v11b.frag"))
 		return -1;
    
 	//Se ajusta la cámara
 	camera = &Camera();
-	camera->SetPosition(glm::vec3(0.0f, 0.0f, 20.0f));
-	IGlib::setViewMat(camera->GetMatView());
+	camera->UploadMatView();
 	
 	//Se crean objetos
-	hijo = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
+	cubo0 = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
 		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
-	padre = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
+	cubo0->UploadTexture("../img/cleanUnicorn.png");
+	cubo1 = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
 		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
+	cubo1->UploadTexture("../img/cleanUnicorn.png");
 
-	hijo->SetParent(padre);
+	sun = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
+		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
+	sun->UploadTexture("../img/sun.png");
+	earth = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
+		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
+	earth->UploadTexture("../img/earth.png");
+	middleLayer = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
+		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
+	middleLayer->UploadTexture("../img/middleLayer.png");
+	innerLayer = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
+		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
+	innerLayer->UploadTexture("../img/innerLayer.png");
+	moon = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
+		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
+	moon->UploadTexture("../img/moon.png");
+
+	cubo1->SetParent(cubo0);
+
+	earth->SetParent(sun);
+	innerLayer->SetParent(earth);
+	middleLayer->SetParent(earth);
+	moon->SetParent(earth);
 
 	//Test Position
-	hijo->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-	padre->SetPosition(glm::vec3(3.0f, 0.0f, 0.0f));
+	cubo0->SetPosition(glm::vec3(0.0f, 0.0f, -30.0f));
+	cubo1->SetPosition(glm::vec3(-10.0f, 0.0f, 0.0f));
+
+	sun->SetPosition(glm::vec3(0.0f, 0.0f, 20.0f));
+	earth->SetPosition(glm::vec3(-6.0f, 0.0f, 0.0f));
+	middleLayer->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	innerLayer->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	moon->SetPosition(glm::vec3(0.0f, 2.0f, 0.0f));
+
 	//Test Rotation
-	padre->Rotate(glm::vec3(0.0f, 0.0f, 0.0f));
-	hijo->Rotate(glm::vec3(45.0f, 0.0f, 0.0f));
+	sun->Rotate(glm::vec3(0.0f, 0.0f, 0.0f));
+	earth->Rotate(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	//Test Scale
-	hijo->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
-	padre->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+	sun->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+	earth->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+	middleLayer->SetScale(glm::vec3(0.7f, 0.7f, 0.7f));
+	innerLayer->SetScale(glm::vec3(0.4f, 0.4f, 0.4f));
+	moon->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 
-	IGlib::setModelMat(hijo->GetObjId(), hijo->GetMatModel());
-	IGlib::setModelMat(padre->GetObjId(), padre->GetMatModel());
+	//Upload Matrices to GPU
+	cubo0->UploadMatModel();
+	cubo1->UploadMatModel();
+
+	sun->UploadMatModel();
+	earth->UploadMatModel();
+	middleLayer->UploadMatModel();
+	innerLayer->UploadMatModel();
+	moon->UploadMatModel();
 
 	//CBs
 	IGlib::setResizeCB(resizeFunc);
@@ -71,18 +113,85 @@ int main(int argc, char** argv)
 void resizeFunc(int width, int height)
 {
 	camera->SetAspect((float)width / (float)height);
-	IGlib::setProjMat(camera->GetMatProj());
+	camera->UploadMatProj();
 }
 
 void idleFunc()
 {
-	hijo->Rotate(glm::vec3(1.0f, 0.0f, 0.0f));
-	IGlib::setModelMat(hijo->GetObjId(), hijo->GetMatModel());
+	float rotationSpeed = 1.0f;
+	cubo0->RotateY(rotationSpeed);
+	cubo1->RotateY(-5.0 * rotationSpeed);
+
+	sun->RotateY(rotationSpeed);
+	earth->Rotate(glm::vec3(0.0f, 0.0f, 1.0f) * rotationSpeed);
+	middleLayer->Rotate(glm::vec3(0.0f, -1.0f, 1.0f) * rotationSpeed);
+	innerLayer->Rotate(glm::vec3(1.0f, 1.0f, -1.0f) * rotationSpeed);
+	moon->Rotate(glm::vec3(1.0f, 1.0f, 0.0f));
+
+	sun->UploadMatModel();
+	earth->UploadMatModel();
+	middleLayer->UploadMatModel();
+	innerLayer->UploadMatModel();
+	moon->UploadMatModel();
+	cubo0->UploadMatModel();
+	cubo1->UploadMatModel();
 }
 
 void keyboardFunc(unsigned char key, int x, int y)
 {
 	std::cout << "Se ha pulsado la tecla " << key << std::endl << std::endl;
+	//Camera Movement
+	float movementSpeed = 1.0f;
+	if (key == 'w')
+		camera->MoveLocal(glm::vec3(0.0f, 0.0f, -1.0f) * movementSpeed);
+	if (key == 's')
+		camera->MoveLocal(glm::vec3(0.0f, 0.0f, 1.0f) * movementSpeed);
+	if (key == 'a')
+		camera->MoveLocal(glm::vec3(-1.0f, 0.0f, 0.0f) * movementSpeed);
+	if (key == 'd')
+		camera->MoveLocal(glm::vec3(1.0f, 0.0f, 0.0f) * movementSpeed);
+	if (key == 'q')
+		camera->MoveLocal(glm::vec3(0.0f, 1.0f, 0.0f) * movementSpeed);
+	if (key == 'e')
+		camera->MoveLocal(glm::vec3(0.0f, -1.0f, 0.0f) * movementSpeed);
+
+	//Camera Rotation
+	float rotationSpeed = 2.0f;
+	if (key == 'i')
+		camera->RotateX(rotationSpeed);
+	if (key == 'k')
+		camera->RotateX(-rotationSpeed);
+	if (key == 'j')
+		camera->RotateY(rotationSpeed);
+	if (key == 'l')
+		camera->RotateY(-rotationSpeed);
+	if (key == 'u')
+		camera->RotateZ(rotationSpeed);
+	if (key == 'o')
+		camera->RotateZ(-rotationSpeed);
+
+	//Camera Aperture
+	if (key == 'z')
+		camera->SetAperture(camera->GetAperture() + 1.0f);
+	if (key == 'x')
+		camera->SetAperture(camera->GetAperture() - 1.0f);
+
+	//Fast change between "scenes"
+	if (key == '0')
+	{
+		camera->SetRotationMat(glm::mat4(1.0f));
+		camera->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+		camera->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	}
+	if (key == '1')
+	{
+		camera->SetRotationMat(glm::mat4(1.0f));
+		camera->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+		camera->RotateY(180);
+		camera->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	}
+	camera->UploadMatView();
+	camera->UploadMatProj();
 }
 
 void mouseFunc(int button, int state, int x, int y)

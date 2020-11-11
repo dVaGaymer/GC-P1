@@ -76,5 +76,23 @@
     <None Include="..\shaders_P1\shader.v8.vert">
       <Filter>shaders</Filter>
     </None>
+    <None Include="..\shaders_P1\shader.v10.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders_P1\shader.v10.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders_P1\shader.v11a.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders_P1\shader.v11a.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders_P1\shader.v11b.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders_P1\shader.v11b.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

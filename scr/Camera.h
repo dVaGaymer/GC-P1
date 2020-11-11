@@ -26,6 +26,14 @@ public:
 	void SetAperture(float aperture);
 	void SetAspect(float aspect);
 
+	float GetNear();
+	float GetFar();
+	float GetAperture();
+	float GetAspect();
+
 	glm::mat4 GetMatView();
 	glm::mat4 GetMatProj();
+
+	void UploadMatProj();
+	void UploadMatView();
 };
