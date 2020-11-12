@@ -18,18 +18,12 @@
     <ClInclude Include="scr\Camera.h">
       <Filter>src\Includes</Filter>
     </ClInclude>
-    <ClInclude Include="scr\Entity.h">
-      <Filter>src\Includes</Filter>
-    </ClInclude>
     <ClInclude Include="scr\Object.h">
       <Filter>src\Includes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scr\main.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="scr\Entity.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="scr\Camera.cpp">

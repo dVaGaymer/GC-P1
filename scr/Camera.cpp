@@ -1,10 +1,6 @@
 #include "Camera.h"
 #include <iostream>
 
-void Camera::ResetTransform()
-{
-	//Reset LookAt
-}
 void Camera::SetAspect(float aspect){ this->aspect = aspect; }
 void Camera::SetAperture(float aperture) { this->aperture = aperture; }
 void Camera::SetNear(float near) { this->near = near; }
@@ -15,6 +11,7 @@ float Camera::GetNear() { return this->near; }
 float Camera::GetFar() { return this->far; }
 float Camera::GetAperture() { return this->aperture; }
 float Camera::GetAspect() { return this->aspect; }
+glm::vec3 Camera::GetPosition() { return this->position; }
 
 void Camera::UploadMatProj() { IGlib::setProjMat(this->GetMatProj()); }
 void Camera::UploadMatView() { IGlib::setViewMat(GetMatView()); }
@@ -24,13 +21,14 @@ void Camera::LookAt(glm::vec3 to, glm::vec3 up)
 	this->axis.forward = glm::normalize(this->position - to);
 	this->axis.right = glm::normalize(glm::cross(up, this->axis.forward));
 	this->axis.up = glm::cross(this->axis.forward, this->axis.right);
-
-	/*IGlib::setViewMat(glm::lookAt(this->position, to, up));*/
 }
 glm::mat4 Camera::GetMatProj()
 {
-	float r = glm::tan(glm::radians(this->aperture) / 2), l = -glm::tan(glm::radians(this->aperture) / 2);
-	float t = r / this->aspect, b = l / this->aspect;
+	float r, t, b, l;
+	t = glm::tan(glm::radians(this->aperture / 2));
+	b = -t;
+	r = t * this->aspect;
+	l = b * this->aspect;
 	glm::mat4 proj = glm::mat4(0.0f);
 	proj[0].x = (2 * this->near) / (r - l);
 	proj[1].y = (2 * this->near) / (t - b);
@@ -63,80 +61,29 @@ glm::mat4 Camera::GetMatView()
 
 void Camera::Move(glm::vec3 offset, float speed)
 {
-	this->position += (offset.x * speed) * this->axis.forward;
-	this->position += (offset.y * speed) * glm::normalize(glm::cross(this->axis.forward, this->axis.up));
+	this->position += (offset.z * speed) * this->axis.forward;
+	this->position += (offset.x * speed) * this->axis.right;
+	this->position += (offset.y * speed) * this->axis.up;
 }
 
-void Camera::Rotate(float yawOffset, float pitchOffset)
-{
-	float speed = 0.1f;
-	this->yaw += yawOffset * speed;
-	this->pitch -= pitchOffset * speed;
-	if (this->pitch > 89.0f)
-		this->pitch = 89.0f;
-	if (this->pitch < -89.0f)
-		this->pitch = -89.0f;
+void Camera::Rotate(float pitchOffset, float yawOffset, float speed)
+{ 
+	this->eulerAngles.x -= yawOffset * speed;
+	this->eulerAngles.y -= pitchOffset * speed;
+	if (this->eulerAngles.y > 89.0f)
+		this->eulerAngles.y = 89.0f;
+	if (this->eulerAngles.y < -89.0f)
+		this->eulerAngles.y = -89.0f;
 	UpdateAxis();
 }
 
 void Camera::UpdateAxis()
 {
-	this->axis.forward.x = glm::cos(glm::radians(this->yaw)) * glm::cos(glm::radians(this->pitch));
-	this->axis.forward.y = glm::sin(glm::radians(this->pitch));
-	this->axis.forward.z = glm::sin(glm::radians(this->yaw)) * glm::cos(glm::radians(this->pitch));
+	this->axis.forward.x = glm::cos(glm::radians(this->eulerAngles.x)) * glm::cos(glm::radians(this->eulerAngles.y));
+	this->axis.forward.y = glm::sin(glm::radians(this->eulerAngles.y));
+	this->axis.forward.z = glm::sin(glm::radians(this->eulerAngles.x)) * glm::cos(glm::radians(this->eulerAngles.y));
 	this->axis.forward = glm::normalize(this->axis.forward);
 
 	this->axis.right = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), this->axis.forward));
 	this->axis.up = glm::normalize(glm::cross(this->axis.forward, this->axis.right));
 }
-
-//TESTS----------------------------------
-void Camera::RotateX(float angle)
-{
-	glm::mat4 xRot = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(this->axis.right));
-	this->axis.up = glm::normalize(xRot * glm::vec4(this->axis.up, 0.0f));
-	this->axis.forward = glm::normalize(glm::cross(this->axis.right, this->axis.up));
-}
-void Camera::RotateY(float angle)
-{
-	glm::mat4 yRot = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(this->axis.up));
-	this->axis.forward = glm::normalize(yRot * glm::vec4(this->axis.forward, 0.0f));
-	this->axis.right = glm::normalize(glm::cross(this->axis.up, this->axis.forward));
-}
-void Camera::RotateZ(float angle)
-{
-	glm::mat4 zRot = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(this->axis.forward));
-	this->axis.right = glm::normalize(zRot * glm::vec4(this->axis.right, 0.0f));
-	this->axis.up = glm::normalize(glm::cross(this->axis.forward, this->axis.right));
-}
-glm::mat4 Camera::GetTransform()
-{
-	return glm::mat4(1.0f);
-}
-
-//void Camera::RotateTest(glm::vec3 angles)
-//{
-//	this->rotationMat = glm::rotate(glm::mat4(1.0), glm::radians(angles.z), glm::vec3(0, 0, 1)) *
-//		glm::rotate(glm::mat4(1.0), glm::radians(angles.y), glm::vec3(1, 0, 0)) *
-//		glm::rotate(glm::mat4(1.0), glm::radians(angles.z), glm::vec3(0, 0, 1));
-//
-//	this->axis.forward = glm::normalize(glm::vec3(rotationMat * glm::vec4(this->axis.forward, 0.0f)));
-//	this->axis.right = glm::normalize(glm::vec3(rotationMat * glm::vec4(this->axis.right, 0.0f)));
-//	this->axis.up = glm::normalize(glm::vec3(rotationMat * glm::vec4(this->axis.up, 0.0f)));
-//}
-
-//void Camera::RotateX(float angle)
-//{
-//	glm::mat4 xRot = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(this->axis.x));
-//	this->rotationMat = this->rotationMat * xRot;
-//}
-//void Camera::RotateY(float angle)
-//{
-//	glm::mat4 yRot = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(this->axis.y));
-//	this->rotationMat = this->rotationMat * yRot;
-//}
-//void Camera::RotateZ(float angle)
-//{
-//	glm::mat4 zRot = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(this->axis.z));
-//	this->rotationMat = this->rotationMat * zRot;
-//}
