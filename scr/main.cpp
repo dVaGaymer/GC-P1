@@ -15,7 +15,7 @@
 Object *sun;
 Object *earth, *middleLayer, *innerLayer;
 Object *moon;
-Object *cubo0, *cubo1;
+Object *cubo0, *cubo1, *center;
 Camera *camera;
 
 //Declaración de CB
@@ -28,11 +28,11 @@ void mouseMotionFunc(int x, int y);
 int main(int argc, char** argv)
 {
 	std::locale::global(std::locale("spanish"));// acentos ;)
-	if (!IGlib::init("../shaders_P1/shader.v11b.vert", "../shaders_P1/shader.v11b.frag"))
+	if (!IGlib::init("../shaders_P1/shader.v11a.vert", "../shaders_P1/shader.v11a.frag"))
 		return -1;
    
 	//Se ajusta la cámara
-	camera = &Camera();
+	camera = &Camera(glm::vec3(0.0f, 0.0f, 0.0f));
 	camera->UploadMatView();
 	
 	//Se crean objetos
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
 	cubo0->UploadTexture("../img/cleanUnicorn.png");
 	cubo1 = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
 		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
-	cubo1->UploadTexture("../img/cleanUnicorn.png");
+	cubo1->UploadTexture("../img/unicorn.png");
 
 	sun = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
 		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent);
@@ -67,18 +67,16 @@ int main(int argc, char** argv)
 	moon->SetParent(earth);
 
 	//Test Position
-	cubo0->SetPosition(glm::vec3(0.0f, 0.0f, -30.0f));
-	cubo1->SetPosition(glm::vec3(-10.0f, 0.0f, 0.0f));
+	cubo0->SetPosition(glm::vec3(0.0f, 0.0f, -20.0f));
+	cubo1->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+
+	cubo0->RotateZ(0);
 
 	sun->SetPosition(glm::vec3(0.0f, 0.0f, 20.0f));
 	earth->SetPosition(glm::vec3(-6.0f, 0.0f, 0.0f));
 	middleLayer->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	innerLayer->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	moon->SetPosition(glm::vec3(0.0f, 2.0f, 0.0f));
-
-	//Test Rotation
-	sun->Rotate(glm::vec3(0.0f, 0.0f, 0.0f));
-	earth->Rotate(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	//Test Scale
 	sun->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
@@ -119,14 +117,14 @@ void resizeFunc(int width, int height)
 void idleFunc()
 {
 	float rotationSpeed = 1.0f;
-	cubo0->RotateY(rotationSpeed);
+	cubo0->RotateX(rotationSpeed);
 	cubo1->RotateY(-5.0 * rotationSpeed);
 
 	sun->RotateY(rotationSpeed);
-	earth->Rotate(glm::vec3(0.0f, 0.0f, 1.0f) * rotationSpeed);
-	middleLayer->Rotate(glm::vec3(0.0f, -1.0f, 1.0f) * rotationSpeed);
-	innerLayer->Rotate(glm::vec3(1.0f, 1.0f, -1.0f) * rotationSpeed);
-	moon->Rotate(glm::vec3(1.0f, 1.0f, 0.0f));
+	earth->RotateZ(1.0f * rotationSpeed);
+	middleLayer->RotateY(-1.0f * rotationSpeed);
+	innerLayer->RotateX(1.0f * rotationSpeed);
+	moon->RotateX(1.0f * rotationSpeed);
 
 	sun->UploadMatModel();
 	earth->UploadMatModel();
@@ -141,34 +139,26 @@ void keyboardFunc(unsigned char key, int x, int y)
 {
 	std::cout << "Se ha pulsado la tecla " << key << std::endl << std::endl;
 	//Camera Movement
-	float movementSpeed = 1.0f;
+	float movementSpeed = 0.5f;
 	if (key == 'w')
-		camera->MoveLocal(glm::vec3(0.0f, 0.0f, -1.0f) * movementSpeed);
+		camera->Move(glm::vec3(-1.0f, 0.0f, 0.0f), movementSpeed);
 	if (key == 's')
-		camera->MoveLocal(glm::vec3(0.0f, 0.0f, 1.0f) * movementSpeed);
+		camera->Move(glm::vec3(1.0f, 0.0f, 0.0f), movementSpeed);
 	if (key == 'a')
-		camera->MoveLocal(glm::vec3(-1.0f, 0.0f, 0.0f) * movementSpeed);
+		camera->Move(glm::vec3(0.0f, 1.0f, 0.0f), movementSpeed);
 	if (key == 'd')
-		camera->MoveLocal(glm::vec3(1.0f, 0.0f, 0.0f) * movementSpeed);
-	if (key == 'q')
-		camera->MoveLocal(glm::vec3(0.0f, 1.0f, 0.0f) * movementSpeed);
-	if (key == 'e')
-		camera->MoveLocal(glm::vec3(0.0f, -1.0f, 0.0f) * movementSpeed);
-
-	//Camera Rotation
-	float rotationSpeed = 2.0f;
+		camera->Move(glm::vec3(0.0f, -1.0f, 0.0f), movementSpeed);
 	if (key == 'i')
-		camera->RotateX(rotationSpeed);
+		camera->Rotate(0.0f, 1.0f);
 	if (key == 'k')
-		camera->RotateX(-rotationSpeed);
+		camera->Rotate(0.0f, -1.0f);
 	if (key == 'j')
-		camera->RotateY(rotationSpeed);
+		camera->Rotate(1.0f, .0f);
 	if (key == 'l')
-		camera->RotateY(-rotationSpeed);
-	if (key == 'u')
-		camera->RotateZ(rotationSpeed);
-	if (key == 'o')
-		camera->RotateZ(-rotationSpeed);
+		camera->Rotate(-1.0f, 0.0f);
+	std::cout << "a: " << camera->axis.right.x		<< " " << camera->axis.right.y		<< " " << camera->axis.right.z		<< std::endl;
+	std::cout << "a: " << camera->axis.up.x			<< " " << camera->axis.up.y			<< " " << camera->axis.up.z			<< std::endl;
+	std::cout << "a: " << camera->axis.forward.x	<< " " << camera->axis.forward.y	<< " " << camera->axis.forward.z	<< std::endl;
 
 	//Camera Aperture
 	if (key == 'z')
@@ -176,24 +166,11 @@ void keyboardFunc(unsigned char key, int x, int y)
 	if (key == 'x')
 		camera->SetAperture(camera->GetAperture() - 1.0f);
 
-	//Fast change between "scenes"
-	if (key == '0')
-	{
-		camera->SetRotationMat(glm::mat4(1.0f));
-		camera->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
-		camera->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-	}
-	if (key == '1')
-	{
-		camera->SetRotationMat(glm::mat4(1.0f));
-		camera->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
-		camera->RotateY(180);
-		camera->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-	}
 	camera->UploadMatView();
-	camera->UploadMatProj();
 }
 
+glm::vec2 prev;
+bool pressed = false;
 void mouseFunc(int button, int state, int x, int y)
 {
 	if (state==0)
@@ -206,9 +183,19 @@ void mouseFunc(int button, int state, int x, int y)
 	if (button == 2) std::cout << "de la derecha del ratón " << std::endl;
 
 	std::cout << "en la posición " << x << " " << y << std::endl << std::endl;
+	if (state == 0 && button == 2)
+	{
+		prev.x = x;
+		prev.y = y;
+	}
 }
 
 void mouseMotionFunc(int x, int y)
 {
-	std::cout << "x: " << x << " y: " << y << std::endl;
+	std::cout << x - prev.x << " " << prev.y - y << std::endl;
+	camera->Rotate(x - prev.x, prev.y - y);
+	camera->UploadMatView();
+
+	prev.x = x;
+	prev.y = y;
 }

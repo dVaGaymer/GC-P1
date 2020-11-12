@@ -12,7 +12,7 @@
 */
 void	Entity::MoveLocal(glm::vec3 offset)
 {
-	this->position = glm::vec3(this->GetMatTranslation() * this->GetMatRotation() * this->GetMatScale() * glm::vec4(offset, 1.0f));
+	this->position = glm::vec3(this->GetTransform() *glm::vec4(offset, 1.0f));
 }
 /*
 * Change Position relative to current position
@@ -23,42 +23,26 @@ void	Entity::MoveWorld(glm::vec3 offset)
 {
 	this->position += offset;
 }
-/*
-* Change Rotation relative to current rotation
-*/
-void	Entity::Rotate(glm::vec3 offset, bool eulerRotation)
-{
-	this->rotation.x += this->rotation.x >= 360 ? offset.x - 360 : offset.x;
-	this->rotation.y += this->rotation.y >= 360 ? offset.y - 360 : offset.y;
-	this->rotation.z += this->rotation.z >= 360 ? offset.z - 360 : offset.z;
-
-	if (!eulerRotation)
-		this->rotationMat = glm::rotate(glm::mat4(1.0), glm::radians(this->rotation.x), glm::vec3(1, 0, 0)) *
-		glm::rotate(glm::mat4(1.0), glm::radians(this->rotation.y), glm::vec3(0, 1, 0)) *
-		glm::rotate(glm::mat4(1.0), glm::radians(this->rotation.z), glm::vec3(0, 0, 1));
-	else
-		this->rotationMat = glm::rotate(glm::mat4(1.0), glm::radians(this->rotation.z), glm::vec3(0, 0, 1)) *
-		glm::rotate(glm::mat4(1.0), glm::radians(this->rotation.y), glm::vec3(1, 0, 0)) *
-		glm::rotate(glm::mat4(1.0), glm::radians(this->rotation.x), glm::vec3(0, 0, 1));
-}
 void Entity::RotateX(float angle)
 {
-	this->rotationMat = this->rotationMat * glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 xRot = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
+	this->rotationMat = this->rotationMat * xRot;
 }
 void Entity::RotateY(float angle)
 {
-	this->rotationMat = this->rotationMat * glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 yRot = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+	this->rotationMat = this->rotationMat * yRot;
 }
 void Entity::RotateZ(float angle)
 {
-	this->rotationMat = this->rotationMat * glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::mat4 zRot = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+	this->rotationMat = this->rotationMat * zRot;
 }
 void	Entity::SetPosition(glm::vec3 position)
 {
 	this->position = position;
 }
 void Entity::SetRotationMat(glm::mat4 rotationMat) { this->rotationMat = rotationMat; }
-void	Entity::SetRotation(glm::vec3 rotation) { this->rotation = rotation; }
 void	Entity::SetScale(glm::vec3 scale) { this->scale = scale; }
 
 glm::mat4	Entity::GetMatTranslation()
@@ -77,9 +61,27 @@ glm::mat4	Entity::GetMatScale()
 	scale[2][2] = this->scale.z;
 	return scale;
 }
+
 glm::mat4 Entity::GetTransform()
 {
 	return	GetMatTranslation() *
-			GetMatRotation() *
-			GetMatScale();
+		GetMatRotation() *
+		GetMatScale();
+}
+
+/*
+* Change Rotation relative to current rotation
+*/
+void	Entity::Rotate(glm::vec3 offset, bool eulerRotation)
+{
+	glm::mat4 offsetMat(1.0f);
+	if (!eulerRotation)
+		offsetMat = glm::rotate(glm::mat4(1.0), glm::radians(offset.x), glm::vec3(1, 0, 0)) *
+		glm::rotate(glm::mat4(1.0), glm::radians(offset.y), glm::vec3(0, 1, 0)) *
+		glm::rotate(glm::mat4(1.0), glm::radians(offset.z), glm::vec3(0, 0, 1));
+	else
+		offsetMat = glm::rotate(glm::mat4(1.0), glm::radians(offset.z), glm::vec3(0, 0, 1)) *
+		glm::rotate(glm::mat4(1.0), glm::radians(offset.y), glm::vec3(1, 0, 0)) *
+		glm::rotate(glm::mat4(1.0), glm::radians(offset.x), glm::vec3(0, 0, 1));
+	rotationMat += offsetMat;
 }

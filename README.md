@@ -28,7 +28,7 @@ Shaders not included in the repo (not yet :P)
   Nota: r y s son las coordenadas de textura del fragmento
 
 # Optional
-- [ ] Controla el giro de la cámara utilizando el ratón (cámara orbital).
+- [x] Controla el giro de la cámara utilizando el ratón (cámara orbital).
 
 - [ ] Crea un tercer cubo y hazlo orbitar alrededor del primero. Define su movimiento utilizando curvas de Bézier, splines cúbicos o polinomios de interpolación de CatmullRom.
 

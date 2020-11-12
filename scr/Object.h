@@ -55,4 +55,7 @@ public:
 	void UploadMatModel();
 	void UploadTexture();
 	void UploadTexture(const char* texPath);
+
+	void Object::ResetTransform();
+	glm::vec3 Object::GetPosition();
 };

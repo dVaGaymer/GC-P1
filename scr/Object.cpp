@@ -33,3 +33,16 @@ void Object::UploadMatModel()
 {
 	IGlib::setModelMat(this->objId, this->GetMatModel());
 }
+
+void Object::ResetTransform()
+{
+	parent = nullptr;
+	position = glm::vec3(0.0f, 0.0f, 0.0f);
+	scale = glm::vec3(1.0f);
+	rotationMat = glm::mat4(1.0f);
+}
+
+glm::vec3 Object::GetPosition()
+{
+	return this->GetMatModel() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+}
