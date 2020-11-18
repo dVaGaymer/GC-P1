@@ -15,6 +15,13 @@ Object *cubo0;
 Object *cubo1, *traslacion1;
 Camera *camera;
 
+//Solar system
+Object	*sun,
+		*earth, *earthTr,
+		*inner,
+		*middle,
+		*moon, * moonTr;
+
 //Declaración de CB
 void resizeFunc(int width, int height);
 void idleFunc();
@@ -25,11 +32,11 @@ void mouseMotionFunc(int x, int y);
 int main(int argc, char** argv)
 {
 	std::locale::global(std::locale("spanish"));// acentos ;)
-	if (!IGlib::init("../shaders_P1/shader.v11a.vert", "../shaders_P1/shader.v11a.frag"))
+	if (!IGlib::init("../shaders_P1/shader.v10.vert", "../shaders_P1/shader.v10.frag"))
 		return -1;
 
 	//Se ajusta la cámara
-	camera = &Camera(glm::vec3(0.0f, 0.0f, -15.0f));
+	camera = &Camera(glm::vec3(0.0f, 0.0f, -14.0f));
 	camera->UploadMatView();
 
 	//Se crean objetos
@@ -38,17 +45,15 @@ int main(int argc, char** argv)
 	cubo1 = &Object(cubeNTriangleIndex, cubeNVertex, cubeTriangleIndex,
 		cubeVertexPos, cubeVertexColor, cubeVertexNormal, cubeVertexTexCoord, cubeVertexTangent, "../img/moon.png");
 	traslacion1 = &Object();
-
-	//Set Position
+	//Posicion de los objetos
 	cubo0->SetPosition(glm::vec3(0.0f, 0.0f, -20.0f));
-	cubo0->UploadMatModel();
 	//Traslacion cubo1 sobre cubo0
 	traslacion1->SetPosition(cubo0->GetPositionRelativeToWorld());
 	cubo1->SetParent(traslacion1);
+	//Ahora que traslacion1 es padre de cubo1, la posicion de cubo1 es respecto a traslacion1
 	cubo1->SetPosition(glm::vec3(3.0f, 0.0f, 0.0f));
-	cubo1->UploadMatModel();
 
-	//Upload Matrices to GPU
+	//Subir las matrices de transformacion a la gpu
 	cubo0->UploadMatModel();
 	cubo1->UploadMatModel();
 
@@ -67,22 +72,28 @@ int main(int argc, char** argv)
 
 void resizeFunc(int width, int height)
 {
+	//Cambiar el aspecto de la camara
 	camera->SetAspect((float)width / (float)height);
+	//Actualizar la matriz de proyeccion ya que ha cambiado una propiedad de la camara
 	camera->UploadMatProj();
 }
 
 void idleFunc()
 {
 	float rotationSpeed = 1.0f;
+	//Rotar ambos cubos constantemente para generar movimiento
 	traslacion1->RotateY(1 * rotationSpeed);
 	cubo1->RotateY(2 * rotationSpeed);
+	cubo0->Rotate(rotationSpeed * glm::vec3(0.3f, -0.5f, 0.7f));
+	//Cambiar constantemente las matrices que utiliza la GPU para calcular las posiciones
+	cubo0->UploadMatModel();
 	cubo1->UploadMatModel();
 }
 
 void keyboardFunc(unsigned char key, int x, int y)
 {
 	std::cout << "Se ha pulsado la tecla " << key << std::endl << std::endl;
-	//Camera Movement
+	//Moviemiento de la camara
 	float movementSpeed = 0.5f;
 	if (key == 'w')
 		camera->Move(glm::vec3(0.0f, 0.0f, -1.0f), movementSpeed);
@@ -97,7 +108,7 @@ void keyboardFunc(unsigned char key, int x, int y)
 	if (key == 'e')
 		camera->Move(glm::vec3(0.0f, -1.0f, 0.0f), movementSpeed);
 
-	//Camera Rotation
+	//Cambiar Rotacion de la camara
 	if (key == 'i')
 		camera->Rotate(1.0f, 0.0f, 1.5f);
 	if (key == 'k')
@@ -105,9 +116,9 @@ void keyboardFunc(unsigned char key, int x, int y)
 	if (key == 'j')
 		camera->Rotate(0.0f, 1.0f, 1.5f);
 	if (key == 'l')
-		camera->Rotate(0.0f, -1.0f);
+		camera->Rotate(0.0f, -1.0f, 1.5f);
 
-	//Camera Aperture
+	//Cambiar aperutra de la camara
 	if (key == 'z')
 		camera->SetAperture(camera->GetAperture() + 1.0f);
 	if (key == 'x')

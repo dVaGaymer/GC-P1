@@ -40,36 +40,6 @@
     <None Include="..\shaders_P1\shader_allvariables.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\shaders_P1\shader.v0.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\shaders_P1\shader.v0.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\shaders_P1\shader.v1.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\shaders_P1\shader.v1.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\shaders_P1\shader.v5.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\shaders_P1\shader.v2.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\shaders_P1\shader.v2.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\shaders_P1\shader.v5.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\shaders_P1\shader.v8.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\shaders_P1\shader.v8.vert">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="..\shaders_P1\shader.v10.frag">
       <Filter>shaders</Filter>
     </None>

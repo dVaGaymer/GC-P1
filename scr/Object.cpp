@@ -1,5 +1,8 @@
 #include "Object.h"
 
+/*
+* Object properties
+*/
 void Object::SetTexPath(const char* texPath) { this->texPath = texPath; }
 void Object::SetParent(Object* parent) { this->parent = parent; }
 void Object::SetObjId(int objId) { this->objId = objId;  };
@@ -15,9 +18,15 @@ void		Object::SetPosition(glm::vec3 position) { this->position = position; }
 void		Object::SetRotationMat(glm::mat4 rotationMat) { this->rotationMat = rotationMat; }
 void		Object::SetScale(glm::vec3 scale) { this->scale = scale; }
 
+/*
+* Movement
+*/
 void	Object::MoveLocal(glm::vec3 offset) { this->position = glm::vec3(this->GetTransform() * glm::vec4(offset, 1.0f)); }
 void	Object::MoveWorld(glm::vec3 offset) { this->position += offset; }
 
+/*
+* Rotation
+*/
 void Object::RotateX(float angle)
 {
 	glm::mat4 xRot = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -47,6 +56,9 @@ void	Object::Rotate(glm::vec3 offset, bool eulerRotation)
 	rotationMat *= offsetMat;
 }
 
+/*
+* Object Transforms
+*/
 glm::mat4	Object::GetMatTranslation() { return glm::translate(glm::mat4(1.0f), this->position); }
 glm::mat4	Object::GetMatRotation() { return this->rotationMat; }
 glm::mat4	Object::GetMatScale()
@@ -63,7 +75,6 @@ glm::mat4 Object::GetTransform()
 			GetMatRotation() *
 			GetMatScale();
 }
-
 glm::mat4 Object::GetMatModel()
 {
 	if (this->parent)
@@ -71,6 +82,10 @@ glm::mat4 Object::GetMatModel()
 	else
 		return	this->GetTransform();
 }
+
+/*
+* Upload transforms and texture to GPU
+*/
 void Object::UploadTexture(const char* texPath)
 {
 	this->SetTexPath(texPath);

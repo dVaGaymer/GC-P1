@@ -48,25 +48,37 @@ public:
 		:axis({ glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) , glm::vec3(0.0f, 0.0f, 1.0f) }),
 		near(near), far(far), aperture(aperture), aspect(aspect), position(position), eulerAngles(90, 0) {}
 
+	/*
+	* Set and Get Camera properties
+	*/
 	void SetNear(float near);
 	void SetFar(float far);
 	void SetAperture(float aperture);
 	void SetAspect(float aspect);
 	void SetPosition(glm::vec3 position);
-
 	float GetNear();
 	float GetFar();
 	float GetAperture();
 	float GetAspect();
 	glm::vec3 GetPosition();
 
+	/*
+	* Camera position and rotation
+	*/
 	void LookAt(glm::vec3 to, glm::vec3 up);
 	void Move(glm::vec3 offset, float speed = 1.0f);
 	void Rotate(float yaw, float pitch, float speed = 0.1f);
 	void UpdateAxis();
 
+	/*
+	* Camera transform and projection
+	*/
 	glm::mat4 GetMatProj();
 	glm::mat4 GetMatView();
+
+	/*
+	* Upload transforms to GPU
+	*/
 	void UploadMatProj();
 	void UploadMatView();
 };

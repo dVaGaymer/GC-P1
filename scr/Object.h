@@ -42,6 +42,10 @@ public:
 		position(0.0f, 0.0f, 0.0f),
 		rotationMat(1.0f),
 		scale(1) {}
+
+	/*
+	* Get and Set Object properties
+	*/
 	void SetObjId(unsigned int nTriangles, unsigned int nVertex,
 		const unsigned int* triangleIdx, const float* vertexPos,
 		const float* vertexColor, const float* vertexNormal,
@@ -77,11 +81,11 @@ public:
 	glm::mat4 GetMatScale();
 	glm::mat4 GetTransform();
 	glm::vec3 GetPositionRelativeToWorld();
+	glm::mat4 GetMatModel();
 
 	/*
 	* Upload to GPU Object Matrices
 	*/
-	glm::mat4 GetMatModel();
 	void UploadMatModel();
 	void UploadTexture();
 	void UploadTexture(const char* texPath);
